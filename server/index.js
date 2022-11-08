@@ -28,19 +28,46 @@ db.connect(function(err) {
 
 
 // Connecting our routes up to the app using express
-app.post('/api/login', (req,res) => {
-  console.log(req.params)
-  console.log(req.query)
+app.post('/api/insecure/login', (req,res) => {
   db.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}'`, 
-(err,result)=>{
-    if(err) {
-    console.log(err)
+  (err,result)=>
+  {
+    if(result.length==0)
+    {
+      res.status(400)
+      res.send({error: "INVALID_CREDENTIALS"})
     }
+    else if(err)
+    {
+      res.status(401)
+      res.send(err)
+    }
+    else{
+      res.status(200)
+      res.send(result)
+    }
+  }); 
+})
 
-console.log(result)
-res.send(result)
-}
-    ); 
+app.post('/api/secure/login', (req,res) => {
+  db.query(`SELECT * FROM users WHERE username = ? AND password = ?`,[req.query.username,req.query.password], 
+  (err,result)=>
+  {
+  if(result.length==0)
+  {
+    res.status(400)
+    res.send({error: "INVALID_CREDENTIALS"})
+  }
+  else if(err)
+  {
+    res.status(401)
+    res.send(err)
+  }
+  else{
+    res.status(200)
+    res.send(result)
+  }
+  }); 
 })
 
 app.listen(PORT, ()=>{
