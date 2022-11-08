@@ -28,10 +28,10 @@ db.connect(function(err) {
 
 
 // Connecting our routes up to the app using express
-app.get('/api/login', (req,res) => {
+app.post('/api/login', (req,res) => {
   console.log(req.params)
   console.log(req.query)
-  db.query("SELECT * FROM users WHERE username = ? AND password = ?", [req.params.username, req.params.password], 
+  db.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}'`, 
 (err,result)=>{
     if(err) {
     console.log(err)
