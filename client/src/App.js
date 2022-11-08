@@ -1,35 +1,24 @@
-import React from "react";
-import { Container, AppBar, Typography, Grow, Grid} from '@material-ui/core'
-import memories from './images/memories.png'
-import Posts from "./components/Posts/Posts.js";
-import Post from "./components/Posts/Post/Post.js";
-import Form from './components/Form/Form.js'
-import useStyles from './styles'
+import React,{useEffect} from "react";
+import axios from 'axios'
 
 const App = () => {
-    const classes = useStyles()
+    useEffect( () => { 
+        async function fetchData() {
+            try {
+                  const params = new URLSearchParams({username:'test',password:'test'});
+
+                  let url = `http://localhost:5000/api/login?${params.toString()}`
+                  const res = await axios.post(url); 
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        fetchData();
+    }, []);
     return (
-        <Container maxidth="lg">
-            <AppBar className={classes.appBar} position = "static" color="inherit">
-            <Typography className={classes.heading} variant="h2" align="center">
-                Memories
-            </Typography>
-            <img className={classes.image} src={memories} alt="memories" height="100"/>
-            </AppBar>
-            <Grow in>
-                <Container>
-                    <Grid container justify="space-between" alignItems="stretch" spacing={3}>
-                        <Grid item xs={12} sm={7}>
-                            <Posts />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <Form />
-                        </Grid>
-                    </Grid>
-                </Container>
-            </Grow>
-        </Container>
-    )
+        <div>
+        </div>
+        )
 }
 
 export default App
