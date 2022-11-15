@@ -2,6 +2,8 @@ import express from "express";
 import cors from 'cors';
 import dotenv from 'dotenv'
 import mysql from 'mysql'
+import multer from 'multer'
+import yauzl from 'yauzl'
 
 dotenv.config()
 
@@ -28,6 +30,7 @@ db.connect(function(err) {
 
 
 // Connecting our routes up to the app using express
+
 app.post('/api/insecure/login', (req,res) => {
   db.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}'`, 
   (err,result)=>
@@ -68,6 +71,30 @@ app.post('/api/secure/login', (req,res) => {
     res.send(result)
   }
   }); 
+})
+
+// Idea is the following, we take a file if it is zipped then we unzip it and then read it as a string into the database
+const storage = multer.diskStorage({
+  destination: (req, file, callBack) => {
+      callBack(null, 'uploads')
+  },
+  filename: (req, file, callBack) => {
+      callBack(null, `${file.originalname}`)
+  }
+})
+
+let upload = multer({ dest: 'uploads/' })
+
+
+app.post('/api/insecure/upload', upload.single('file'), (req,res) => {
+  const file = req.file
+  yauzl.open(file.path, {lazyEntries: true}, function(err, zipfile) {
+    zipfile.readEntry();
+    zipfile.on("entry", function(entry) {
+        zipfile.readEntry();
+    });
+  })
+  console.log(file)
 })
 
 app.listen(PORT, ()=>{

@@ -5,7 +5,6 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import Banner from './components/Banner'
 
 const Login = () => {
-    console.log("login")
     const [login,setLogin] = useState({username:'',password:''})
     const [login_info,setLoginInfo] = useState()
     const [error,setError] = useState(false)

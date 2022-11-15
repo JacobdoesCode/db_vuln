@@ -3,12 +3,32 @@ import axios from 'axios'
 import './styles.css'
 import "bootstrap/dist/css/bootstrap.min.css"
 
-const Upload = () => {
-    console.log("upload")
+export default function Upload() {
+    const [uploaded_file, setUploadedFile] = useState(null)
+
+    const changeHandler = async(event) =>{
+        setUploadedFile(event.target.files[0])
+    }
+
+    const handleSubmission = async(event) =>{
+        event.preventDefault()
+        const formData = new FormData();
+        formData.append("file", uploaded_file);
+        try {
+            const response = await axios.post("/api/insecure/upload",formData);
+          } catch(error) {
+            console.log(error)
+          }
+        console.log(uploaded_file)
+        console.log("submission")
+    }
 
     return(
-        <h1>hiaoh</h1>
+        <div>
+            <input type="file" name="file" onChange={changeHandler} />
+            <div>
+                <button onClick={handleSubmission}>Submit</button>
+            </div>
+        </div>    
     )
 }
-
-export default Upload
