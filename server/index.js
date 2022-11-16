@@ -1,15 +1,13 @@
 import express from "express";
 import cors from 'cors';
-import dotenv from 'dotenv'
 import mysql from 'mysql'
 import multer from 'multer'
-import yauzl from 'yauzl'
-
-dotenv.config()
+import AdmZip from "adm-zip";
+import path from "path";
 
 const app = express();
 app.use(express.json())
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 
 // Prevents CORS issues
@@ -88,13 +86,22 @@ let upload = multer({ dest: 'uploads/' })
 
 app.post('/api/insecure/upload', upload.single('file'), (req,res) => {
   const file = req.file
-  yauzl.open(file.path, {lazyEntries: true}, function(err, zipfile) {
-    zipfile.readEntry();
-    zipfile.on("entry", function(entry) {
-        zipfile.readEntry();
+
+  if(file.mimetype == 'application/zip' || file.mimetype == 'application/x-zip-compressed'){
+    try {
+      const zip = new AdmZip(file.path);
+      const zipEntries = zip.getEntries()
+      zipEntries.forEach(function (zipEntry) {
+        console.log(zipEntry.toString()); // outputs zip entries information
     });
-  })
-  console.log(file)
+      const outputDir = `${path.parse(file.path).name}_extracted`;
+      zip.extractAllTo(outputDir);
+  
+      console.log(`Extracted to "${outputDir}" successfully`);
+    } catch (e) {
+      console.log(`Something went wrong. ${e}`);
+    }
+    }
 })
 
 app.listen(PORT, ()=>{
