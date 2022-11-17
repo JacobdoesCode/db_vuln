@@ -3,7 +3,6 @@ import cors from 'cors';
 import mysql from 'mysql'
 import multer from 'multer'
 import AdmZip from "adm-zip";
-import path from "path";
 
 const app = express();
 app.use(express.json())
@@ -91,13 +90,13 @@ app.post('/api/insecure/upload', upload.single('file'), (req,res) => {
     try {
       const zip = new AdmZip(file.path);
       const zipEntries = zip.getEntries()
+
       zipEntries.forEach(function (zipEntry) {
-        console.log(zipEntry.toString()); // outputs zip entries information
-    });
-      const outputDir = `${path.parse(file.path).name}_extracted`;
-      zip.extractAllTo(outputDir);
+        const outputDir = 'uploads/'+zipEntry.entryName
+        console.log(`Extracted to "${outputDir}" successfully`);
+        zip.extractEntryTo(zipEntry,outputDir,true,true)
+      });
   
-      console.log(`Extracted to "${outputDir}" successfully`);
     } catch (e) {
       console.log(`Something went wrong. ${e}`);
     }
