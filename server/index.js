@@ -29,6 +29,7 @@ db.connect(function(err) {
 // Connecting our routes up to the app using express
 
 app.post('/api/insecure/login', (req,res) => {
+  //test';-- 
   db.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}'`, 
   (err,result)=>
   {
@@ -92,6 +93,8 @@ app.post('/api/insecure/upload', upload.single('file'), (req,res) => {
       const zipEntries = zip.getEntries()
 
       zipEntries.forEach(function (zipEntry) {
+        console.log(zipEntry)
+
         const outputDir = 'uploads/'+zipEntry.entryName
         console.log(`Extracted to "${outputDir}" successfully`);
         zip.extractEntryTo(zipEntry,outputDir,true,true)
@@ -102,6 +105,27 @@ app.post('/api/insecure/upload', upload.single('file'), (req,res) => {
     }
     }
 })
+
+app.post('/api/secure/upload', upload.single('file'), (req,res) => {
+  const file = req.file
+  if(file.mimetype == 'application/zip' || file.mimetype == 'application/x-zip-compressed'){
+    try {
+      const zip = new AdmZip(file.path);
+      const zipEntries = zip.getEntries()
+
+      zipEntries.forEach(function (zipEntry) {
+        if(!zipEntry.entryName.startsWith('../')){
+          console.log(`Extracted to "${outputDir}" successfully`);
+          zip.extractEntryTo(zipEntry,outputDir,true,true)        
+        }
+      });
+  
+    } catch (e) {
+      console.log(`Something went wrong. ${e}`);
+    }
+    }
+})
+
 
 app.listen(PORT, ()=>{
   console.log(`Running on Port ${PORT}`)}
