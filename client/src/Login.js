@@ -23,9 +23,9 @@ const Login = () => {
             setError(false)
             //test';-- 
             const params = new URLSearchParams({username:login.username,password:login.password});
-            let url = `http://localhost:5000/api/insecure/login?${params.toString()}`
+            let url = `/api/insecure/login?${params.toString()}`
             const res = await axios.post(url); 
-            console.log(res.status)
+            console.log(res)
             setLoginInfo(res.data[0].username)
         }
         catch(error){
@@ -41,7 +41,7 @@ const Login = () => {
         try{
             setError(false)
             const params = new URLSearchParams({username:login.username,password:login.password});
-            let url = `http://localhost:5000/api/secure/login?${params.toString()}`
+            let url = `/api/secure/login?${params.toString()}`
             const res = await axios.post(url); 
             setLoginInfo(res.data[0].username)
 

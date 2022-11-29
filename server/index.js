@@ -12,6 +12,7 @@ const PORT = 5000;
 // Prevents CORS issues
 app.use(cors())
 
+
 // Connecting to our MySQL database and configuring the connection
 
 const db = mysql.createConnection({
@@ -30,6 +31,7 @@ db.connect(function(err) {
 
 app.post('/api/insecure/login', (req,res) => {
   //test';-- 
+  console.log(req.query.username)
   db.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}'`, 
   (err,result)=>
   {
